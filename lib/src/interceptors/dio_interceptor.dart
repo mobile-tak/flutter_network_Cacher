@@ -47,13 +47,18 @@ class DioCacheInterceptor extends Interceptor {
     if (data == null ||
         (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache)) {
       super.onRequest(options, handler);
+    } else if (dioCacheOptions?.dioCacheMethod ==
+        DioCacheMethod.triggerOnSocket) {
+      super.onRequest(options, handler);
     } else {
       try {
         loadAsyncRequest(options, _dio);
 
         handler.resolve(
             Response(requestOptions: options, data: json.decode(data)), true);
-      } catch (e) {}
+      } catch (e) {
+        log("");
+      }
     }
   }
 
@@ -118,8 +123,10 @@ class DioCacheInterceptor extends Interceptor {
       String? str = (options.uri.toString() +
           options.data.toString() +
           tempHeader.toString());
+      log("Cacher:$str");
       return str;
     } catch (e) {
+      log("Cacher:Error:$e");
       return "";
     }
   }
