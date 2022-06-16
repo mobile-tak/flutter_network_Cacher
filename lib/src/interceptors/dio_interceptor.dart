@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_network_cacher/src/constants/enums.dart';
@@ -23,13 +24,28 @@ class DioCacheInterceptor extends Interceptor {
   }
 
   @override
+  void onError(DioError err, ErrorInterceptorHandler handler) async {
+    if (err.error is SocketException) {
+      String? data =
+          await Db.getStringData(key: _getStorageUrl(err.requestOptions));
+      var dioCacheOptions =
+          MapHelper.getDioCacheOptionsFromExtras(err.requestOptions);
+      if ((dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket &&
+          data != null)) {
+        handler.resolve(Response(
+            requestOptions: err.requestOptions, data: json.decode(data)));
+      }
+    }
+    super.onError(err, handler);
+  }
+
+  @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
     String? data = await Db.getStringData(key: _getStorageUrl(options));
     var dioCacheOptions = MapHelper.getDioCacheOptionsFromExtras(options);
     if (data == null ||
-        (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache) ||
-        dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket) {
+        (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache)) {
       super.onRequest(options, handler);
     } else {
       try {
@@ -37,9 +53,7 @@ class DioCacheInterceptor extends Interceptor {
 
         handler.resolve(
             Response(requestOptions: options, data: json.decode(data)), true);
-      } catch (e) {
-        log("");
-      }
+      } catch (e) {}
     }
   }
 
@@ -104,10 +118,8 @@ class DioCacheInterceptor extends Interceptor {
       String? str = (options.uri.toString() +
           options.data.toString() +
           tempHeader.toString());
-      log("Cacher:$str");
       return str;
     } catch (e) {
-      log("Cacher:Error:$e");
       return "";
     }
   }
