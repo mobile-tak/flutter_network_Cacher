@@ -94,6 +94,8 @@ class DioCacheInterceptor extends Interceptor {
   }
 
   _getStorageUrl(RequestOptions options) {
-    return options.uri.toString() + options.data.toString();
+    return options.uri.toString() +
+        options.data.toString() +
+        options.queryParameters.toString();
   }
 }
