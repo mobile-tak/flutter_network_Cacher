@@ -19,7 +19,7 @@ class Db {
   static Future<String> putStringData(
       {required String uId,
       String? data,
-      Duration maxAge = const Duration(days: 30)}) async {
+      Duration maxAge = const Duration(seconds: 5)}) async {
     File file = await DefaultCacheManager().putFile(
         uId, StringHelper.stringToUnit8List(data ?? ""),
         maxAge: maxAge, eTag: uId);

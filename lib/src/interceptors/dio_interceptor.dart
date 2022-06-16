@@ -28,7 +28,8 @@ class DioCacheInterceptor extends Interceptor {
     String? data = await Db.getStringData(key: _getStorageUrl(options));
     var dioCacheOptions = MapHelper.getDioCacheOptionsFromExtras(options);
     if (data == null ||
-        (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache)) {
+        (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache) ||
+        dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket) {
       super.onRequest(options, handler);
     } else {
       try {
@@ -37,7 +38,7 @@ class DioCacheInterceptor extends Interceptor {
         handler.resolve(
             Response(requestOptions: options, data: json.decode(data)), true);
       } catch (e) {
-        print("ErrorIs:$e");
+        log("");
       }
     }
   }
@@ -88,14 +89,26 @@ class DioCacheInterceptor extends Interceptor {
         ),
       );
     }
-    print(response);
     await Db.putStringData(
         uId: _getStorageUrl(requestOptions), data: jsonEncode(response.data));
   }
 
   _getStorageUrl(RequestOptions options) {
-    return options.uri.toString() +
-        options.data.toString() +
-        options.headers.toString();
+    try {
+      String tempHeader;
+      if (options.headers.containsKey("Authorization")) {
+        tempHeader = options.headers["Authorization"];
+      } else {
+        tempHeader = "";
+      }
+      String? str = (options.uri.toString() +
+          options.data.toString() +
+          tempHeader.toString());
+      log("Cacher:$str");
+      return str;
+    } catch (e) {
+      log("Cacher:Error:$e");
+      return "";
+    }
   }
 }
