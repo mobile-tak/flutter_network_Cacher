@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_network_cacher/flutter_network_cacher.dart';
 import 'package:flutter_network_cacher/src/constants/enums.dart';
 import 'package:flutter_network_cacher/src/db/db.dart';
 import 'package:flutter_network_cacher/src/helper/map_helper.dart';
@@ -113,10 +114,13 @@ class DioCacheInterceptor extends Interceptor {
   }
 
   _getStorageUrl(RequestOptions options) {
+    DioCacheOptions? dioCacheOptions =
+        MapHelper.getDioCacheOptionsFromExtras(options);
     try {
       String tempHeader;
-      if (options.headers.containsKey("Authorization")) {
-        tempHeader = options.headers["Authorization"];
+      if (dioCacheOptions?.uniqueHeader != null &&
+          options.headers.containsKey(dioCacheOptions?.uniqueHeader)) {
+        tempHeader = options.headers[dioCacheOptions?.uniqueHeader];
       } else {
         tempHeader = "";
       }
