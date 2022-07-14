@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_network_cacher/flutter_network_cacher.dart';
 
 import '../widgets/custom_text_button.dart';
 
@@ -11,6 +12,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    Fnc().init();
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -22,7 +30,7 @@ class _HomePageState extends State<HomePage> {
             CustomTextButton(
               label: "Image Caching",
               onTap: () {},
-            )
+            ),
           ],
         ),
       ),

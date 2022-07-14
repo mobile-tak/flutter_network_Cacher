@@ -1,10 +1,23 @@
 import 'dart:io';
-
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_network_cacher/src/helper/string_helper.dart';
+import 'package:get_storage/get_storage.dart';
 
 class Db {
-  Db._();
+  static final Db _obj = Db._internal();
+  Db._internal();
+  factory Db() {
+    return _obj;
+  }
+
+  late GetStorage _imageBucket;
+  late GetStorage _networkRequestBucket;
+
+  Future<void> init(
+      {required String imageBucket,
+      required String networkRequestBucket}) async {
+    _imageBucket = GetStorage(imageBucket);
+    _networkRequestBucket = GetStorage(networkRequestBucket);
+  }
 
   static Future<String?> getStringData({required String key}) async {
     FileInfo? fileInfo =
@@ -28,5 +41,9 @@ class Db {
 
   static Future clearCache() async {
     await DefaultCacheManager().emptyCache();
+  }
+
+  tempMe() {
+    _imageBucket.w
   }
 }

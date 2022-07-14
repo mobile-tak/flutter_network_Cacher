@@ -9,7 +9,7 @@ environment:
 
 dependencies:
   dio: ^4.0.6
-  flutter_cache_manager: ^3.3.0
+  get_storage: ^2.0.3
   flutter:
     sdk: flutter
 
