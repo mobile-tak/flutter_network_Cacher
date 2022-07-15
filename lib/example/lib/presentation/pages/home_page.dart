@@ -35,16 +35,28 @@ class _HomePageState extends State<HomePage> {
           CustomTextButton(
             label: "Image Caching",
             onTap: () {
-              // objectBox.clearCache();
-              // ImageCache().clear();
-              // ImageCache().clearLiveImages();
-              // ImageCache().maximumSize = 12;
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const ImageCachingPage(),
                 ),
               );
+            },
+          ),
+          CustomTextButton(
+            label: "Clear Cache",
+            onTap: () {
+              objectBox.clearCache();
+
+              // ImageCache().clear();
+              // ImageCache().clearLiveImages();
+              // ImageCache().maximumSize = 12;
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => const ImageCachingPage(),
+              //   ),
+              // );
             },
           ),
         ],

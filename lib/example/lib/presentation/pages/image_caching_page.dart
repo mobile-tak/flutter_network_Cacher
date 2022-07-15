@@ -1,17 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:typed_data';
 import 'dart:ui' as im;
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
 import 'package:example/main.dart';
 import 'package:example/presentation/widgets/custom_text_button.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'dart:math' as math;
 
 class ImageCachingPage extends StatefulWidget {
@@ -146,13 +138,12 @@ class CustomSimulation extends Simulation {
   double x(double time) {
     var max =
         math.max(math.min(initPosition, 0.0), initPosition + velocity * time);
-
     return max;
   }
 
   @override
   double dx(double time) {
-    return -2500;
+    return 2500;
   }
 
   @override
@@ -272,10 +263,9 @@ class _CustomImageWidgetState extends State<CustomImageWidget> {
           duration: Duration(milliseconds: 1),
           child: snapshot.hasData
               ? RawImage(
-                  // fit: BoxFit.fill,
                   image: snapshot.data,
-                  height: snapshot.data?.height.toDouble(),
-                  width: snapshot.data?.width.toDouble(),
+                  // width: ScreenUtil.instance.setWidth(600),
+                  // height: ScreenUtil.instance.setWidth(400),
                 )
               : SizedBox(
                   // width: getMemWidth(widget.url).toDouble(),

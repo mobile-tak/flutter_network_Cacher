@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:example/objbox/model/generated/objectbox.g.dart';
@@ -14,8 +15,8 @@ class ObjectBox {
 
   static Future<ObjectBox> init() async {
     final store = await openStore();
-    // await store.runAsync((store, parameter) => null,
-    //     ""); // store.runAsync((store, parameter) => null, param);
+    await store.runAsync((store, parameter) => null,
+        ""); // store.runAsync((store, parameter) => null, param);
     return ObjectBox._init(store);
   }
 
@@ -38,5 +39,6 @@ class ObjectBox {
 
   clearCache() {
     _imageBox.removeAll();
+    // Directory(_store.directoryPath).deleteSync(recursive: true);
   }
 }
