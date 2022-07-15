@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:typed_data';
 import 'dart:ui' as im;
 import 'package:http/http.dart' as http;
 import 'package:example/main.dart';
@@ -220,14 +221,14 @@ class _CustomImageWidgetState extends State<CustomImageWidget> {
   //   return byteData;
   // }
 
-  Future<im.Image> getSingleImageFile() async {
+  Future<im.Image?> getSingleImageFile() async {
     if (image != null) {
       return image!;
     }
 
     var localImage = objectBox.getImage(url: widget.url);
     if (localImage != null) {
-      var res = await decodeImageFromList(localImage.imageData);
+      var res = await bytesToImage(localImage.imageData);
       // insertToMemCache(widget.url, res.width, res.height);
       return res;
     }
@@ -238,65 +239,39 @@ class _CustomImageWidgetState extends State<CustomImageWidget> {
     objectBox.insertImage(url: widget.url, imageData: byteData);
     // uint8image = byteData;
 
-    var res = await decodeImageFromList(byteData);
+    var res = await bytesToImage(byteData);
     // insertToMemCache(widget.url, res.width, res.height);
     return res;
   }
 
   @override
   Widget build(BuildContext context) {
-    im.Image;
-
-    // return Image.memory(
-    //   (objectBox.getImage(url: widget.url)?.imageData)!,
-    //   width: double.infinity,
-    //   height: 100,
-    //   fit: BoxFit.fill,
-    // );
-    return FutureBuilder<im.Image>(
-      // future: getSingleImage(),
+    return FutureBuilder<im.Image?>(
       future: getSingleImageFile(),
-
       initialData: null,
       builder: (context, snapshot) {
-        return AnimatedSwitcher(
-          duration: Duration(milliseconds: 1),
-          child: snapshot.hasData
-              ? RawImage(
-                  image: snapshot.data,
-                  // width: ScreenUtil.instance.setWidth(600),
-                  // height: ScreenUtil.instance.setWidth(400),
-                )
-              : SizedBox(
-                  // width: getMemWidth(widget.url).toDouble(),
-                  // height: getMemHeight(widget.url).toDouble(),
-                  child: const CircularProgressIndicator(),
-                ),
-        );
-
-        if (snapshot.hasData) {
-          return RawImage(
-            fit: BoxFit.fill,
-            image: snapshot.data,
-            height: 100,
-            width: double.infinity,
-          );
-          // return Image.memory(
-          //   snapshot.data!,
-          //   width: double.infinity,
-          //   height: 100,
-          //   fit: BoxFit.fill,
-          // );
-        } else if (snapshot.hasError) {
-          return const Icon(Icons.error);
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasData) {
+            return RawImage(
+              image: snapshot.data,
+            );
+          } else {
+            return Text("Error");
+          }
         } else {
-          return SizedBox(
-            width: double.infinity,
-            height: 100,
-            child: const CircularProgressIndicator(),
-          );
+          return CircularProgressIndicator();
         }
       },
     );
+  }
+}
+
+Future<im.Image?> bytesToImage(Uint8List imgBytes) async {
+  try {
+    im.Codec codec = await im.instantiateImageCodec(imgBytes);
+    im.FrameInfo frame = await codec.getNextFrame();
+    return frame.image;
+  } catch (e) {
+    return null;
   }
 }
