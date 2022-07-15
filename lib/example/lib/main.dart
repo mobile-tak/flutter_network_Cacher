@@ -1,7 +1,13 @@
+import 'package:example/objbox/object_box.dart';
 import 'package:example/presentation/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+late ObjectBox objectBox;
+
+void main() async {
+  ImageCache().maximumSize = 5;
+  WidgetsFlutterBinding.ensureInitialized();
+  objectBox = await ObjectBox.init();
   runApp(const MyApp());
 }
 

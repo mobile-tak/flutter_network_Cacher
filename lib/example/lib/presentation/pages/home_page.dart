@@ -1,5 +1,7 @@
+import 'package:example/main.dart';
+import 'package:example/objbox/model/generated/objectbox.g.dart';
+import 'package:example/presentation/pages/image_caching_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_network_cacher/flutter_network_cacher.dart';
 
 import '../widgets/custom_text_button.dart';
 
@@ -13,8 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
-    Fnc().init();
-    // TODO: implement initState
+    // Fnc().init();
     super.initState();
   }
 
@@ -24,15 +25,29 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text("Home Page"),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            CustomTextButton(
-              label: "Image Caching",
-              onTap: () {},
-            ),
-          ],
-        ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          const SizedBox(
+            height: 20,
+            width: double.infinity,
+          ),
+          CustomTextButton(
+            label: "Image Caching",
+            onTap: () {
+              // objectBox.clearCache();
+              // ImageCache().clear();
+              // ImageCache().clearLiveImages();
+              // ImageCache().maximumSize = 12;
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ImageCachingPage(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

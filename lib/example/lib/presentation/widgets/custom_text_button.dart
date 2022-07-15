@@ -10,16 +10,17 @@ class CustomTextButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.pink.shade800,
+          color: Colors.pink,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Text(
           label ?? "",
           style: const TextStyle(
             color: Colors.white,
-            fontSize: 24,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),
