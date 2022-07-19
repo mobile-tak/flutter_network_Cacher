@@ -73,7 +73,7 @@ class _ImageCachingPageState extends State<ImageCachingPage> {
             Expanded(
               child: ListView.builder(
                 // controller: ,
-                physics: CustomScrollPhysics(),
+                // physics: CustomScrollPhysics(),
                 itemCount: 500,
                 itemBuilder: (context, index) {
                   return Container(
@@ -144,7 +144,7 @@ class CustomSimulation extends Simulation {
 
   @override
   double dx(double time) {
-    return 2500;
+    return 1000;
   }
 
   @override

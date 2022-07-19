@@ -1,9 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:example/objbox/model/generated/objectbox.g.dart';
 import 'package:example/objbox/model/image_model/image_model.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ObjectBox {
   late final Store _store;
@@ -14,7 +16,13 @@ class ObjectBox {
   }
 
   static Future<ObjectBox> init() async {
+    var res = await getTemporaryDirectory();
+
+    String path = res.path;
+
     final store = await openStore();
+    final anotherStore = await openStore(directory: "$path/test");
+
     await store.runAsync((store, parameter) => null,
         ""); // store.runAsync((store, parameter) => null, param);
     return ObjectBox._init(store);
@@ -37,8 +45,14 @@ class ObjectBox {
     return _imageBox.getAll();
   }
 
-  clearCache() {
-    _imageBox.removeAll();
-    // Directory(_store.directoryPath).deleteSync(recursive: true);
+  clearCache() async {
+    // _imageBox.removeAll();
+    var path = _store.directoryPath;
+
+    bool directoryExists = await Directory(path).exists();
+    bool fileExists = await File(path).exists();
+    if (directoryExists || fileExists) {
+      Directory(path).deleteSync(recursive: true);
+    }
   }
 }

@@ -8,6 +8,7 @@ void main() async {
   ImageCache().maximumSize = 5;
   WidgetsFlutterBinding.ensureInitialized();
   objectBox = await ObjectBox.init();
+  objectBox.clearCache();
   runApp(const MyApp());
 }
 
