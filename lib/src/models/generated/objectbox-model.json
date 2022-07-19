@@ -4,30 +4,6 @@
   "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
   "entities": [
     {
-      "id": "1:614571910238225674",
-      "lastPropertyId": "3:7082804292006970420",
-      "name": "ImageModel",
-      "properties": [
-        {
-          "id": "1:814062342366595285",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "2:6127242126493252748",
-          "name": "url",
-          "type": 9
-        },
-        {
-          "id": "3:7082804292006970420",
-          "name": "imageData",
-          "type": 23
-        }
-      ],
-      "relations": []
-    },
-    {
       "id": "2:5060953464353290204",
       "lastPropertyId": "3:8002771633110166816",
       "name": "ResponseStorageModel",
@@ -58,9 +34,15 @@
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    614571910238225674
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    814062342366595285,
+    6127242126493252748,
+    7082804292006970420
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

@@ -13,36 +13,11 @@ import 'package:objectbox/internal.dart'; // generated code can access "internal
 import 'package:objectbox/objectbox.dart';
 import 'package:objectbox_flutter_libs/objectbox_flutter_libs.dart';
 
-import '../../../example/lib/objbox/model/image_model/image_model.dart';
 import '../../../src/models/response_storage_model/response_storage_model.dart';
 
 export 'package:objectbox/objectbox.dart'; // so that callers only have to import this file
 
 final _entities = <ModelEntity>[
-  ModelEntity(
-      id: const IdUid(1, 614571910238225674),
-      name: 'ImageModel',
-      lastPropertyId: const IdUid(3, 7082804292006970420),
-      flags: 0,
-      properties: <ModelProperty>[
-        ModelProperty(
-            id: const IdUid(1, 814062342366595285),
-            name: 'id',
-            type: 6,
-            flags: 1),
-        ModelProperty(
-            id: const IdUid(2, 6127242126493252748),
-            name: 'url',
-            type: 9,
-            flags: 0),
-        ModelProperty(
-            id: const IdUid(3, 7082804292006970420),
-            name: 'imageData',
-            type: 23,
-            flags: 0)
-      ],
-      relations: <ModelRelation>[],
-      backlinks: <ModelBacklink>[]),
   ModelEntity(
       id: const IdUid(2, 5060953464353290204),
       name: 'ResponseStorageModel',
@@ -93,48 +68,21 @@ ModelDefinition getObjectBoxModel() {
       lastIndexId: const IdUid(0, 0),
       lastRelationId: const IdUid(0, 0),
       lastSequenceId: const IdUid(0, 0),
-      retiredEntityUids: const [],
+      retiredEntityUids: const [614571910238225674],
       retiredIndexUids: const [],
-      retiredPropertyUids: const [],
+      retiredPropertyUids: const [
+        814062342366595285,
+        6127242126493252748,
+        7082804292006970420
+      ],
       retiredRelationUids: const [],
       modelVersion: 5,
       modelVersionParserMinimum: 5,
       version: 1);
 
   final bindings = <Type, EntityDefinition>{
-    ImageModel: EntityDefinition<ImageModel>(
-        model: _entities[0],
-        toOneRelations: (ImageModel object) => [],
-        toManyRelations: (ImageModel object) => {},
-        getId: (ImageModel object) => object.id,
-        setId: (ImageModel object, int id) {
-          object.id = id;
-        },
-        objectToFB: (ImageModel object, fb.Builder fbb) {
-          final urlOffset = fbb.writeString(object.url);
-          final imageDataOffset = fbb.writeListInt8(object.imageData);
-          fbb.startTable(4);
-          fbb.addInt64(0, object.id);
-          fbb.addOffset(1, urlOffset);
-          fbb.addOffset(2, imageDataOffset);
-          fbb.finish(fbb.endTable());
-          return object.id;
-        },
-        objectFromFB: (Store store, ByteData fbData) {
-          final buffer = fb.BufferContext(fbData);
-          final rootOffset = buffer.derefObject(0);
-
-          final object = ImageModel(
-              imageData: const fb.Uint8ListReader(lazy: false)
-                  .vTableGet(buffer, rootOffset, 8, Uint8List(0)) as Uint8List,
-              url: const fb.StringReader(asciiOptimization: true)
-                  .vTableGet(buffer, rootOffset, 6, ''),
-              id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0));
-
-          return object;
-        }),
     ResponseStorageModel: EntityDefinition<ResponseStorageModel>(
-        model: _entities[1],
+        model: _entities[0],
         toOneRelations: (ResponseStorageModel object) => [],
         toManyRelations: (ResponseStorageModel object) => {},
         getId: (ResponseStorageModel object) => object.id,
@@ -170,32 +118,17 @@ ModelDefinition getObjectBoxModel() {
   return ModelDefinition(model, bindings);
 }
 
-/// [ImageModel] entity fields to define ObjectBox queries.
-class ImageModel_ {
-  /// see [ImageModel.id]
-  static final id =
-      QueryIntegerProperty<ImageModel>(_entities[0].properties[0]);
-
-  /// see [ImageModel.url]
-  static final url =
-      QueryStringProperty<ImageModel>(_entities[0].properties[1]);
-
-  /// see [ImageModel.imageData]
-  static final imageData =
-      QueryByteVectorProperty<ImageModel>(_entities[0].properties[2]);
-}
-
 /// [ResponseStorageModel] entity fields to define ObjectBox queries.
 class ResponseStorageModel_ {
   /// see [ResponseStorageModel.id]
   static final id =
-      QueryIntegerProperty<ResponseStorageModel>(_entities[1].properties[0]);
+      QueryIntegerProperty<ResponseStorageModel>(_entities[0].properties[0]);
 
   /// see [ResponseStorageModel.uniqueUrl]
   static final uniqueUrl =
-      QueryStringProperty<ResponseStorageModel>(_entities[1].properties[1]);
+      QueryStringProperty<ResponseStorageModel>(_entities[0].properties[1]);
 
   /// see [ResponseStorageModel.data]
   static final data =
-      QueryStringProperty<ResponseStorageModel>(_entities[1].properties[2]);
+      QueryStringProperty<ResponseStorageModel>(_entities[0].properties[2]);
 }
