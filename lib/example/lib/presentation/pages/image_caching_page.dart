@@ -144,7 +144,7 @@ class CustomSimulation extends Simulation {
 
   @override
   double dx(double time) {
-    return 1000;
+    return 600;
   }
 
   @override

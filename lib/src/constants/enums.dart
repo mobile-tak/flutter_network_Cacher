@@ -1,1 +1,1 @@
-enum DioCacheMethod { memory, external, noCache, triggerOnSocket }
+enum DioCacheMethod { memory, external, noCache, triggerOnSocket, cacheOnly }

@@ -1,6 +1,8 @@
 import 'dart:io';
-import 'package:flutter_network_cacher/src/helper/string_helper.dart';
-import 'package:get_storage/get_storage.dart';
+
+import 'package:flutter_network_cacher/src/models/generated/objectbox.g.dart';
+import 'package:flutter_network_cacher/src/models/response_storage_model/response_storage_model.dart';
+import 'package:path_provider/path_provider.dart';
 
 class Db {
   static final Db _obj = Db._internal();
@@ -9,41 +11,74 @@ class Db {
     return _obj;
   }
 
-  late GetStorage _imageBucket;
-  late GetStorage _networkRequestBucket;
+  Box<ResponseStorageModel>? _responseStorageBox;
+  Store? _requestStore;
 
-  Future<void> init(
-      {required String imageBucket,
-      required String networkRequestBucket}) async {
-    _imageBucket = GetStorage(imageBucket);
-    _networkRequestBucket = GetStorage(networkRequestBucket);
-  }
+  Future init() async {
+    var res = await getTemporaryDirectory();
+    String path = res.path;
+    _requestStore = await openStore(directory: "$path/fnc/requeststore");
 
-  static Future<String?> getStringData({required String key}) async {
-    FileInfo? fileInfo =
-        await DefaultCacheManager().getFileFromCache(key, ignoreMemCache: true);
-    if (fileInfo != null) {
-      return await fileInfo.file.readAsString();
-    } else {
-      return null;
+    await _requestStore?.runAsync((store, parameter) => null, null);
+
+    if (_requestStore != null) {
+      _responseStorageBox = Box<ResponseStorageModel>(_requestStore!);
     }
   }
 
-  static Future<String> putStringData(
+  // Future<void> init(
+  //     {required String imageBucket,
+  //     required String networkRequestBucket}) async {
+  //   _imageBucket = GetStorage(imageBucket);
+  //   _networkRequestBucket = GetStorage(networkRequestBucket);
+  // }
+
+  Future<String?> getStringData({required String key}) async {
+    final queryResponse = _responseStorageBox
+        ?.query(ResponseStorageModel_.uniqueUrl.equals(key))
+        .build();
+    final queriedResponse = queryResponse?.findFirst();
+    queryResponse?.close();
+    return queriedResponse?.data;
+  }
+
+  Future<String?> putStringData(
       {required String uId,
       String? data,
       Duration maxAge = const Duration(seconds: 5)}) async {
-    File file = await DefaultCacheManager().putFile(
-        uId, StringHelper.stringToUnit8List(data ?? ""),
-        maxAge: maxAge, eTag: uId);
-    return file.readAsString();
+    int? id = await _responseStorageBox
+        ?.putAsync(ResponseStorageModel(uniqueUrl: uId, data: data));
+    if (id != null) {
+      return _responseStorageBox?.get(id)?.data;
+    }
+    return null;
   }
 
-  static Future clearCache() async {
-    await DefaultCacheManager().emptyCache();
+  Future<String?> removeStringData({required String key}) async {
+    final queryResponse = _responseStorageBox
+        ?.query(ResponseStorageModel_.uniqueUrl.equals(key))
+        .build();
+    final queriedResponse = queryResponse?.findFirst();
+    queryResponse?.close();
+    if (queriedResponse?.data != null) {
+      _responseStorageBox?.remove((queriedResponse?.id)!);
+    }
+
+    return queriedResponse?.data;
   }
 
-  tempMe() {
-    _imageBucket.w
+  Future clearResponseData() async {
+    var path = _requestStore?.directoryPath;
+    _responseStorageBox?.removeAll();
+
+    if (path != null) {
+      bool directoryExists = await Directory(path).exists();
+      bool fileExists = await File(path).exists();
+      if (directoryExists || fileExists) {
+        Directory(path).deleteSync(recursive: true);
+      }
+    }
   }
+
+  tempMe() {}
 }

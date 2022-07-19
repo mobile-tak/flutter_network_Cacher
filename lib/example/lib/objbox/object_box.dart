@@ -8,6 +8,12 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ObjectBox {
+  static final ObjectBox _singleton = ObjectBox._internal();
+  factory ObjectBox() {
+    return _singleton;
+  }
+  ObjectBox._internal();
+
   late final Store _store;
   late final Box<ImageModel> _imageBox;
 

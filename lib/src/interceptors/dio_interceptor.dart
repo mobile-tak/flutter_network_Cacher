@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_network_cacher/flutter_network_cacher.dart';
-import 'package:flutter_network_cacher/src/constants/enums.dart';
 import 'package:flutter_network_cacher/src/db/db.dart';
 import 'package:flutter_network_cacher/src/helper/map_helper.dart';
 
@@ -28,7 +27,7 @@ class DioCacheInterceptor extends Interceptor {
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     if (err.error is SocketException) {
       String? data =
-          await Db.getStringData(key: _getStorageUrl(err.requestOptions));
+          await Db().getStringData(key: _getStorageUrl(err.requestOptions));
       var dioCacheOptions =
           MapHelper.getDioCacheOptionsFromExtras(err.requestOptions);
       if ((dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket &&
@@ -43,14 +42,23 @@ class DioCacheInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    String? data = await Db.getStringData(key: _getStorageUrl(options));
+    String? data = await Db().getStringData(key: _getStorageUrl(options));
     var dioCacheOptions = MapHelper.getDioCacheOptionsFromExtras(options);
-    if (data == null ||
+    if (data != null && (dioCacheOptions?.clearCacheForRequest == true)) {
+      Db().removeStringData(key: _getStorageUrl(options));
+    } else if (data == null ||
         (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache)) {
       super.onRequest(options, handler);
     } else if (dioCacheOptions?.dioCacheMethod ==
         DioCacheMethod.triggerOnSocket) {
       super.onRequest(options, handler);
+    } else if (dioCacheOptions?.dioCacheMethod == DioCacheMethod.cacheOnly) {
+      try {
+        handler.resolve(
+            Response(requestOptions: options, data: json.decode(data)), true);
+      } catch (e) {
+        log("");
+      }
     } else {
       try {
         loadAsyncRequest(options, _dio);
@@ -68,7 +76,7 @@ class DioCacheInterceptor extends Interceptor {
     var dioCacheOptions =
         MapHelper.getDioCacheOptionsFromExtras(response.requestOptions);
     if (dioCacheOptions?.dioCacheMethod != DioCacheMethod.noCache) {
-      await Db.putStringData(
+      await Db().putStringData(
           uId: _getStorageUrl(response.requestOptions),
           data: jsonEncode(response.data));
     }
@@ -83,6 +91,21 @@ class DioCacheInterceptor extends Interceptor {
       response = await dio.get(
         requestOptions.path,
         queryParameters: requestOptions.queryParameters,
+        options: Options(
+          contentType: requestOptions.contentType,
+          followRedirects: requestOptions.followRedirects,
+          headers: requestOptions.headers,
+          listFormat: requestOptions.listFormat,
+          maxRedirects: requestOptions.maxRedirects,
+          method: requestOptions.method,
+          receiveDataWhenStatusError: requestOptions.receiveDataWhenStatusError,
+          receiveTimeout: requestOptions.receiveTimeout,
+          requestEncoder: requestOptions.requestEncoder,
+          responseDecoder: requestOptions.responseDecoder,
+          sendTimeout: requestOptions.sendTimeout,
+          responseType: requestOptions.responseType,
+          validateStatus: requestOptions.validateStatus,
+        ),
       );
     } else if (requestOptions.method == kPost) {
       response = await dio.post(
@@ -109,7 +132,7 @@ class DioCacheInterceptor extends Interceptor {
         ),
       );
     }
-    await Db.putStringData(
+    await Db().putStringData(
         uId: _getStorageUrl(requestOptions), data: jsonEncode(response.data));
   }
 

@@ -45,8 +45,10 @@ class CacheOptions extends Options {
 class DioCacheOptions {
   final DioCacheMethod? dioCacheMethod;
   final String? uniqueHeader;
+  final bool? clearCacheForRequest;
   DioCacheOptions({
     this.dioCacheMethod,
     this.uniqueHeader,
+    this.clearCacheForRequest,
   });
 }
