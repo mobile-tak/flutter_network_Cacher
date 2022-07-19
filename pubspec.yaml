@@ -10,7 +10,7 @@ environment:
 dependencies:
   path_provider: ^2.0.11
   objectbox: ^1.6.0
-  objectbox_flutter_libs: any
+  objectbox_flutter_libs: ^1.6.0
   dio: ^4.0.6
   flutter:
     sdk: flutter
