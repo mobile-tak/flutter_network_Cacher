@@ -16,8 +16,13 @@ class Db {
 
   Future init() async {
     var res = await getTemporaryDirectory();
-    String path = res.path;
-    _requestStore = await openStore(directory: "$path/fnc/requeststore");
+    String path = "${res.path}/requeststore";
+
+    Store.isOpen(path);
+
+    if (!Store.isOpen(path)) {
+      _requestStore = await openStore(directory: path);
+    }
 
     await _requestStore?.runAsync((store, parameter) => null, null);
 

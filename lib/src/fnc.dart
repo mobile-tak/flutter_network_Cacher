@@ -1,4 +1,5 @@
 import 'package:flutter_network_cacher/src/constants/kstring.dart';
+import 'package:flutter_network_cacher/src/db/db.dart';
 
 /// Base Class For initializing Flutter network cacher.
 
@@ -21,5 +22,7 @@ class Fnc {
     _imageBucket = imageBucket ?? KString.imageBucket;
     _networkRequestBucket =
         networkRequestBucket ?? KString.networkRequestBucket;
+
+    Db().init();
   }
 }
