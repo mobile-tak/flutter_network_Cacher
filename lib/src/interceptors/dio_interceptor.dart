@@ -4,7 +4,6 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_network_cacher/flutter_network_cacher.dart';
-import 'package:flutter_network_cacher/src/db/db.dart';
 import 'package:flutter_network_cacher/src/helper/map_helper.dart';
 
 class DioCacheInterceptor extends Interceptor {
@@ -26,8 +25,8 @@ class DioCacheInterceptor extends Interceptor {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     if (err.error is SocketException) {
-      String? data =
-          await Db().getStringData(key: _getStorageUrl(err.requestOptions));
+      String? data = await objectBox.getStringData(
+          key: _getStorageUrl(err.requestOptions));
       var dioCacheOptions =
           MapHelper.getDioCacheOptionsFromExtras(err.requestOptions);
       if ((dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket &&
@@ -42,10 +41,10 @@ class DioCacheInterceptor extends Interceptor {
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
-    String? data = await Db().getStringData(key: _getStorageUrl(options));
+    String? data = await objectBox.getStringData(key: _getStorageUrl(options));
     var dioCacheOptions = MapHelper.getDioCacheOptionsFromExtras(options);
     if (data != null && (dioCacheOptions?.clearCacheForRequest == true)) {
-      Db().removeStringData(key: _getStorageUrl(options));
+      objectBox.removeStringData(key: _getStorageUrl(options));
     } else if (data == null ||
         (dioCacheOptions?.dioCacheMethod == DioCacheMethod.noCache)) {
       super.onRequest(options, handler);
@@ -76,7 +75,7 @@ class DioCacheInterceptor extends Interceptor {
     var dioCacheOptions =
         MapHelper.getDioCacheOptionsFromExtras(response.requestOptions);
     if (dioCacheOptions?.dioCacheMethod != DioCacheMethod.noCache) {
-      await Db().putStringData(
+      await objectBox.putStringData(
           uId: _getStorageUrl(response.requestOptions),
           data: jsonEncode(response.data));
     }
@@ -132,7 +131,7 @@ class DioCacheInterceptor extends Interceptor {
         ),
       );
     }
-    await Db().putStringData(
+    await objectBox.putStringData(
         uId: _getStorageUrl(requestOptions), data: jsonEncode(response.data));
   }
 
