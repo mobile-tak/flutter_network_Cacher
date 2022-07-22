@@ -1,37 +1,43 @@
+import 'dart:async';
 import 'package:get_storage/get_storage.dart';
 
+import 'dart:io';
+
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:flutter_network_cacher/src/helper/string_helper.dart';
+
 class Db {
-  static const String _requestStorage = "requestStorage";
+  Db._();
 
-  static final Db _singleton = Db._internal();
-  factory Db() {
-    return _singleton;
-  }
-  Db._internal();
-
-  GetStorage? _reqBox;
-
-  Future init({String? directoy}) async {
-    _reqBox = GetStorage(_requestStorage);
+  static Future<String?> getStringData({required String key}) async {
+    FileInfo? fileInfo =
+        await DefaultCacheManager().getFileFromCache(key, ignoreMemCache: true);
+    if (fileInfo != null) {
+      return await fileInfo.file.readAsString();
+    } else {
+      return null;
+    }
   }
 
-  Future<String?> getStringData({required String key}) async {
-    return _reqBox?.read<String?>(key);
-  }
-
-  Future<String?> putStringData(
+  static Future<String> putStringData(
       {required String uId,
       String? data,
       Duration maxAge = const Duration(seconds: 5)}) async {
-    await _reqBox?.write(uId, data);
-    return null;
+    File file = await DefaultCacheManager().putFile(
+        uId, StringHelper.stringToUnit8List(data ?? ""),
+        maxAge: maxAge, eTag: uId);
+    return file.readAsString();
   }
 
-  Future removeStringData({required String key}) async {
-    await _reqBox?.remove(key);
+  static Future<void> removeStringData({String? key}) async {
+    if (key != null) {
+      await DefaultCacheManager().removeFile(key).then((value) {}).onError(
+            (error, stackTrace) {},
+          );
+    }
   }
 
-  Future clearResponseData() async {
-    _reqBox?.erase();
+  static Future clearCache() async {
+    await DefaultCacheManager().emptyCache();
   }
 }
