@@ -11,6 +11,7 @@ class Fnc {
     return _obj;
   }
 
+  ///
   String? _imageBucket;
   String? _networkRequestBucket;
 
