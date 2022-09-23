@@ -29,7 +29,8 @@ class DioCacheInterceptor extends Interceptor {
           key: _getStorageUrl(err.requestOptions));
       var dioCacheOptions =
           MapHelper.getDioCacheOptionsFromExtras(err.requestOptions);
-      if ((dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket &&
+      if (((dioCacheOptions?.dioCacheMethod == DioCacheMethod.triggerOnSocket ||
+              dioCacheOptions?.dioCacheMethod == DioCacheMethod.cacheOnly) &&
           data != null)) {
         handler.resolve(Response(
             requestOptions: err.requestOptions, data: json.decode(data)));
