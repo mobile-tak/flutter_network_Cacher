@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_network_cacher/src/models/generated/objectbox.g.dart';
@@ -18,8 +19,9 @@ class Db {
       store = Store.attach(null, path);
     } else {
       store = await openStore(directory: path);
-      await store.runAsync((store, parameter) => null, "");
     }
+
+    await store.runAsync((store, parameter) => null, "");
 
     // final store = await openStore(directory: path);
 
