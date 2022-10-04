@@ -12,11 +12,18 @@ class Db {
     var res = await getTemporaryDirectory();
     String path = "${res.path}/requeststore";
 
-    Store.isOpen(path);
+    Store store;
 
-    final store = await openStore(directory: path);
+    if (Store.isOpen(path)) {
+      store = Store.attach(null, path);
+    } else {
+      store = await openStore(directory: path);
+      await store.runAsync((store, parameter) => null, "");
+    }
 
-    await store.runAsync((store, parameter) => null, "");
+    // final store = await openStore(directory: path);
+
+    // await store.runAsync((store, parameter) => null, "");
 
     return Db._init(store);
   }
