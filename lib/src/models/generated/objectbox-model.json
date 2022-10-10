@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "2:5060953464353290204",
-      "lastPropertyId": "3:8002771633110166816",
+      "lastPropertyId": "4:5635468335566791476",
       "name": "ResponseStorageModel",
       "properties": [
         {
@@ -23,6 +23,11 @@
           "id": "3:8002771633110166816",
           "name": "data",
           "type": 9
+        },
+        {
+          "id": "4:5635468335566791476",
+          "name": "dateAdded",
+          "type": 10
         }
       ],
       "relations": []

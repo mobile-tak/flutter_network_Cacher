@@ -1,72 +1,73 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter_network_cacher/flutter_network_cacher.dart';
+import 'package:flutter_network_cacher/src/db/base_db.dart';
 import 'package:flutter_network_cacher/src/models/generated/objectbox.g.dart';
 import 'package:flutter_network_cacher/src/models/response_storage_model/response_storage_model.dart';
 import 'package:path_provider/path_provider.dart';
 
-class Db {
+class ObjectBoxDb extends BaseDb {
   late final Box<ResponseStorageModel> _responseStorageBox;
   late final Store _requestStore;
 
-  static Future<Db> init() async {
-    var res = await getTemporaryDirectory();
-    String path = "${res.path}/requeststore";
+  @override
+  Future clearResponseData() async {
+    var path = _requestStore.directoryPath;
+    _responseStorageBox.removeAll();
 
-    Store store;
-
-    if (Store.isOpen(path)) {
-      store = Store.attach(null, path);
-    } else {
-      store = await openStore(directory: path);
+    bool directoryExists = await Directory(path).exists();
+    bool fileExists = await File(path).exists();
+    if (directoryExists || fileExists) {
+      Directory(path).deleteSync(recursive: true);
     }
-
-    await store.runAsync((store, parameter) => null, "");
-
-    // final store = await openStore(directory: path);
-
-    // await store.runAsync((store, parameter) => null, "");
-
-    return Db._init(store);
   }
 
-  Db._init(this._requestStore) {
-    _responseStorageBox = Box<ResponseStorageModel>(_requestStore);
-  }
-
-  // Future<void> init(
-  //     {required String imageBucket,
-  //     required String networkRequestBucket}) async {
-  //   _imageBucket = GetStorage(imageBucket);
-  //   _networkRequestBucket = GetStorage(networkRequestBucket);
-  // }
-
-  Future<String?> getStringData({required String key}) async {
+  @override
+  Future<String?> getResponseData({required String key}) async {
     final queryResponse = _responseStorageBox
         .query(ResponseStorageModel_.uniqueUrl.equals(key))
         .build();
-    final queriedResponse = queryResponse?.findFirst();
+    final queriedResponse = queryResponse.findFirst();
+
     queryResponse.close();
     return queriedResponse?.data;
   }
 
-  Future<String?> putStringData(
+  @override
+  Future<BaseDb> init() async {
+    var res = await getTemporaryDirectory();
+    String path = "${res.path}/requeststore";
+
+    if (Store.isOpen(path)) {
+      _requestStore = Store.attach(null, path);
+    } else {
+      _requestStore = await openStore(directory: path);
+    }
+
+    await _requestStore.runAsync((store, parameter) => null, "");
+
+    _responseStorageBox = Box<ResponseStorageModel>(_requestStore);
+
+    return this;
+  }
+
+  @override
+  Future<String?> putResponseData(
       {required String uId,
       String? data,
       Duration maxAge = const Duration(seconds: 5)}) async {
-    int? id = await _responseStorageBox
-        ?.putAsync(ResponseStorageModel(uniqueUrl: uId, data: data));
-    if (id != null) {
-      return _responseStorageBox.get(id)?.data;
-    }
-    return null;
+    int id = await _responseStorageBox.putAsync(ResponseStorageModel(
+        uniqueUrl: uId, data: data, dateAdded: DateTime.now()));
+    return _responseStorageBox.get(id)?.data;
   }
 
-  Future<String?> removeStringData({required String key}) async {
+  @override
+  Future<String?> removeResponseData({required String key}) async {
     final queryResponse = _responseStorageBox
         .query(ResponseStorageModel_.uniqueUrl.equals(key))
         .build();
-    final queriedResponse = queryResponse?.findFirst();
+    final queriedResponse = queryResponse.findFirst();
     queryResponse.close();
     if (queriedResponse?.data != null) {
       _responseStorageBox.remove((queriedResponse?.id)!);
@@ -74,19 +75,4 @@ class Db {
 
     return queriedResponse?.data;
   }
-
-  Future clearResponseData() async {
-    var path = _requestStore.directoryPath;
-    _responseStorageBox.removeAll();
-
-    if (path != null) {
-      bool directoryExists = await Directory(path).exists();
-      bool fileExists = await File(path).exists();
-      if (directoryExists || fileExists) {
-        Directory(path).deleteSync(recursive: true);
-      }
-    }
-  }
-
-  tempMe() {}
 }

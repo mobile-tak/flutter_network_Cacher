@@ -5,7 +5,12 @@ class ResponseStorageModel {
   int id;
   String uniqueUrl;
   String? data;
+  DateTime dateAdded;
 
-  ResponseStorageModel(
-      {required this.uniqueUrl, required this.data, this.id = 0});
+  ResponseStorageModel({
+    required this.uniqueUrl,
+    required this.data,
+    required this.dateAdded,
+    this.id = 0,
+  });
 }

@@ -19,8 +19,6 @@ class CacheOptions extends Options {
     RequestEncoder? requestEncoder,
     ResponseDecoder? responseDecoder,
     ListFormat? listFormat,
-
-    //Need to map to extras..
     DioCacheOptions? dioCacheOptions,
   }) : super(
           method: method,
@@ -46,7 +44,9 @@ class DioCacheOptions {
   final DioCacheMethod? dioCacheMethod;
   final String? uniqueHeader;
   final bool? clearCacheForRequest;
+  final bool Function(DioError)? httpCacheOnError;
   DioCacheOptions({
+    this.httpCacheOnError,
     this.dioCacheMethod,
     this.uniqueHeader,
     this.clearCacheForRequest,

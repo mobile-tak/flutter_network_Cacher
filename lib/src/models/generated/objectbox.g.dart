@@ -21,7 +21,7 @@ final _entities = <ModelEntity>[
   ModelEntity(
       id: const IdUid(2, 5060953464353290204),
       name: 'ResponseStorageModel',
-      lastPropertyId: const IdUid(3, 8002771633110166816),
+      lastPropertyId: const IdUid(4, 5635468335566791476),
       flags: 0,
       properties: <ModelProperty>[
         ModelProperty(
@@ -38,6 +38,11 @@ final _entities = <ModelEntity>[
             id: const IdUid(3, 8002771633110166816),
             name: 'data',
             type: 9,
+            flags: 0),
+        ModelProperty(
+            id: const IdUid(4, 5635468335566791476),
+            name: 'dateAdded',
+            type: 10,
             flags: 0)
       ],
       relations: <ModelRelation>[],
@@ -93,10 +98,11 @@ ModelDefinition getObjectBoxModel() {
           final uniqueUrlOffset = fbb.writeString(object.uniqueUrl);
           final dataOffset =
               object.data == null ? null : fbb.writeString(object.data!);
-          fbb.startTable(4);
+          fbb.startTable(5);
           fbb.addInt64(0, object.id);
           fbb.addOffset(1, uniqueUrlOffset);
           fbb.addOffset(2, dataOffset);
+          fbb.addInt64(3, object.dateAdded.millisecondsSinceEpoch);
           fbb.finish(fbb.endTable());
           return object.id;
         },
@@ -109,6 +115,8 @@ ModelDefinition getObjectBoxModel() {
                   .vTableGet(buffer, rootOffset, 6, ''),
               data: const fb.StringReader(asciiOptimization: true)
                   .vTableGetNullable(buffer, rootOffset, 8),
+              dateAdded: DateTime.fromMillisecondsSinceEpoch(
+                  const fb.Int64Reader().vTableGet(buffer, rootOffset, 10, 0)),
               id: const fb.Int64Reader().vTableGet(buffer, rootOffset, 4, 0));
 
           return object;
@@ -131,4 +139,8 @@ class ResponseStorageModel_ {
   /// see [ResponseStorageModel.data]
   static final data =
       QueryStringProperty<ResponseStorageModel>(_entities[0].properties[2]);
+
+  /// see [ResponseStorageModel.dateAdded]
+  static final dateAdded =
+      QueryIntegerProperty<ResponseStorageModel>(_entities[0].properties[3]);
 }
