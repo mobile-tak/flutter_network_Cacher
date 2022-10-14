@@ -13,14 +13,14 @@ class ObjectBoxDb extends BaseDb {
 
   @override
   Future clearResponseData() async {
-    var path = _requestStore.directoryPath;
+    // var path = _requestStore.directoryPath;
     _responseStorageBox.removeAll();
 
-    bool directoryExists = await Directory(path).exists();
-    bool fileExists = await File(path).exists();
-    if (directoryExists || fileExists) {
-      Directory(path).deleteSync(recursive: true);
-    }
+    // bool directoryExists = await Directory(path).exists();
+    // bool fileExists = await File(path).exists();
+    // if (directoryExists || fileExists) {
+    //   Directory(path).deleteSync(recursive: true);
+    // }
   }
 
   @override
