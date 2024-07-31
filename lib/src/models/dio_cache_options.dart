@@ -6,8 +6,8 @@ import '../constants/enums.dart';
 class CacheOptions extends Options {
   CacheOptions({
     String? method,
-    int? sendTimeout,
-    int? receiveTimeout,
+    Duration? sendTimeout,
+    Duration? receiveTimeout,
     Map<String, dynamic>? extra,
     Map<String, dynamic>? headers,
     ResponseType? responseType,
